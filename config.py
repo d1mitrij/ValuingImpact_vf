@@ -30,7 +30,7 @@ from pathlib import Path
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
 ROOT_DIR   = Path(__file__).parent
-SOURCE_XLS = ROOT_DIR.parent / "eqaly-impact-valuation-method" / "eQALY_Template_2025-02-14_EXPORT.xlsx"
+SOURCE_XLS = ROOT_DIR / "source" / "eQALY_Template_2025-02-14_EXPORT.xlsx"
 OUTPUT_DIR = ROOT_DIR / "output"
 
 # ── Publication metadata ───────────────────────────────────────────────────────
