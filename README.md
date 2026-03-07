@@ -6,6 +6,9 @@ as transitionvaluation-compatible coefficient matrices**
 **Value factors:** [Valuing Impact](https://www.valuingimpact.org) —
 eQALY_Template_2025-02-14_EXPORT.xlsx / WIVF — WASH Impact Valuation Framework 2024
 
+> **Further information on the eQALY method:**
+> https://valuingimpact.com/all/the-eqaly-impact-valuation-method/
+
 **Scripts:** Dr Dimitrij Euler, [Greenings](https://greenings.org) — dimitrij.euler@greenings.org,
 with support of [Claude Code](https://claude.ai/claude-code) (Anthropic)
 
@@ -35,6 +38,7 @@ CE Delft, LANCA, WRI, OECD — see METHODOLOGY.md for full attribution).
 | Field | Value |
 |---|---|
 | Method | eQALY — enhanced Quality-Adjusted Life Year valuation |
+| Method documentation | https://valuingimpact.com/all/the-eqaly-impact-valuation-method/ |
 | Template | eQALY_Template_2025-02-14_EXPORT.xlsx |
 | Framework | WIVF — WASH Impact Valuation Framework 2024 |
 | Author of value factors | Valuing Impact (valuingimpact.org) |
@@ -253,6 +257,7 @@ with support of [Claude Code](https://claude.ai/claude-code) (Anthropic)
 ---
 
 **Value factors author:** Valuing Impact (valuingimpact.org)
+**eQALY method:** https://valuingimpact.com/all/the-eqaly-impact-valuation-method/
 
 **Scripts author:** Dr Dimitrij Euler, Greenings — dimitrij.euler@greenings.org
 (with support of [Claude Code](https://claude.ai/claude-code), Anthropic)

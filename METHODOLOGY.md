@@ -2,6 +2,7 @@
 
 **Organisation:** Greenings
 **Value factors:** Valuing Impact (valuingimpact.org)
+**eQALY method:** https://valuingimpact.com/all/the-eqaly-impact-valuation-method/
 **Version:** 1.0
 **Last Updated:** 2026-03-07
 **Contact:** dimitrij.euler@greenings.org
@@ -15,6 +16,9 @@
 The **eQALY** (enhanced Quality-Adjusted Life Year) method, developed by
 **Valuing Impact**, quantifies the societal value created or destroyed by
 activities across four capital types: Human, Social, Natural, and Business.
+For full method documentation see:
+https://valuingimpact.com/all/the-eqaly-impact-valuation-method/
+
 Unlike single-metric damage-cost frameworks (e.g. EPS, UBA), eQALY integrates
 both benefit and cost pathways within a unified welfare-economics model.
 
@@ -472,6 +476,7 @@ the same pattern as EPS, extended to the country dimension.
 
 > Valuing Impact (2025). *eQALY Impact Valuation Method.*
 > eQALY_Template_2025-02-14_EXPORT.xlsx. valuingimpact.org
+> Full method documentation: https://valuingimpact.com/all/the-eqaly-impact-valuation-method/
 
 > Valuing Impact (2024). *WIVF — WASH Impact Valuation Framework 2024.*
 > WIVF_Wash-Impact-Valuation-Framework-2024d.pdf. valuingimpact.org

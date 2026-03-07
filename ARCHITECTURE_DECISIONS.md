@@ -1,6 +1,7 @@
 # Architecture Decision Records — eQALY Value Factors
 
 **eQALY Impact Valuation Method — Valuing Impact**
+**Method:** https://valuingimpact.com/all/the-eqaly-impact-valuation-method/
 **Scripts:** Dr Dimitrij Euler, Greenings — dimitrij.euler@greenings.org
 (with support of Claude Code, Anthropic)
 
