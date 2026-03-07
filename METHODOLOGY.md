@@ -19,7 +19,7 @@ activities across four capital types: Human, Social, Natural, and Business.
 For full method documentation see:
 https://valuingimpact.com/all/the-eqaly-impact-valuation-method/
 
-Unlike single-metric damage-cost frameworks (e.g. EPS, UBA), eQALY integrates
+Unlike single-metric damage-cost frameworks, eQALY integrates
 both benefit and cost pathways within a unified welfare-economics model.
 
 The core valuation formula (from the Model sheet of the eQALY template):
@@ -50,18 +50,6 @@ Societal_valuation = Footprint × Valuation_factor
 | **Natural Capital** | Ecosystem services, LCA environmental externalities | + or − | USD/ha × HUT; LCA impact × NatCap VF |
 | **Business value** | Staff retention, productivity, reputation | + | Direct USD (1:1 ratio) |
 
-### 1.3 Comparison with EPS and UBA
-
-| Concept | EPS 2015d.1 | UBA MC 4.0 | eQALY (Valuing Impact) |
-|---|---|---|---|
-| Basis | Welfare / damage cost | Welfare / social cost | Welfare / multi-capital |
-| Scope | Environmental emissions (global) | Environmental (Germany / global GHG) | Social + environmental (global) |
-| Metric | ELU/kg (≈ EUR 2015) | EUR_2025/t | USD_2023/impact-unit |
-| Country variation | None (global uniform) | None / Germany-specific | Yes — HUI, HUT, wages, DALY, land |
-| Capital types | Natural only | Natural only | Human, Social, Natural, Business |
-| Sign | Negative (damage) | Negative (damage) | ± (benefit or damage) |
-| Reference | Steen (2015) | Eser et al. (2025) | Valuing Impact (2023/2024) |
-
 ---
 
 ## 2. Global Reference Parameters
@@ -81,7 +69,7 @@ All six indicators share the following reference parameters (from the
 
 Built from IMF world inflation rates embedded in the `Parameters | VI` sheet.
 Applied to convert 2023 USD values to year-specific nominal values.
-Years beyond 2023 are frozen at 100.0 (consistent with WifOR/EPS convention).
+Years beyond 2023 are frozen at 100.0 (no projection of future inflation).
 
 | Year | Deflator index (2023 = 100) | Inflation factor I[y] |
 |------|------|------|
@@ -365,7 +353,7 @@ NatCap | VI dataset (Valuing Impact, 2023 USD price level).
 
 ## 5. Data Processing Pipeline
 
-The five-stage pipeline mirrors steen-vf1/eps_value_factors/pipeline.py exactly.
+The five-stage pipeline is implemented in `pipeline.py` and called from each indicator script.
 
 ```python
 # Stage 1 — Configuration
@@ -446,12 +434,12 @@ the same pattern as EPS, extended to the country dimension.
 
 ### 6.2 Known limitations
 
-- **No sector variation.** Like EPS, the 21 NACE sectors receive identical
-  coefficients for a given (year, variable, country). The sector dimension is
-  maintained for MRIO/EORA26 compatibility only.
+- **No sector variation.** The 21 NACE sectors receive identical coefficients
+  for a given (year, variable, country). The sector dimension is maintained for
+  multi-sector analysis frameworks that require this structure.
 
 - **Forecast years frozen.** Years 2024–2100 use the 2023 USD deflator value (I[y]=1.0).
-  Future inflation is not projected, consistent with EPS and WifOR conventions.
+  Future inflation is not projected.
 
 - **Countries without data.** The HUT dataset covers 148 countries. The remaining
   40 in the 188-country scope receive the arithmetic mean of available HUT values.
@@ -459,8 +447,8 @@ the same pattern as EPS, extended to the country dimension.
 
 - **eQALY reference year 2023.** The DALY value (59,446 USD), wage model, HUI/HUT,
   and NatCap factors are all expressed at 2023 price levels. Users comparing with
-  EPS (EUR 2015) or UBA (EUR 2025) should apply appropriate exchange-rate and
-  inflation adjustments at the point of integration.
+  other value factor systems should apply appropriate exchange-rate and inflation
+  adjustments at the point of integration.
 
 - **LCA characterisation factors limited to two reference activities.** The `LCA | DB`
   sheet in the eQALY template contains only two Ecoinvent 3.10 activities (FR

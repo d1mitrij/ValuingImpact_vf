@@ -1,7 +1,7 @@
 # Algorithms and Pipeline Visualisation — eQALY Value Factors
 
 **eQALY Impact Valuation Method — Valuing Impact reference datasets
-as transitionvaluation-compatible coefficient matrices**
+as structured coefficient matrices**
 
 **Method:** https://valuingimpact.com/all/the-eqaly-impact-valuation-method/
 **Scripts:** Dr Dimitrij Euler, Greenings — dimitrij.euler@greenings.org
@@ -224,7 +224,7 @@ Each extractor returns a consistent `(factor_data, variables, pathway_df)` tripl
 ```
   N_var   = number of variables for this indicator (1–16)
   N_yr    = 19  (years 2014–2030 annual + 2050, 2100)
-  N_cty   = 188  (ISO3 country codes, WifOR/EPS scope)
+  N_cty   = 188  (ISO3 country codes)
   N_nace  = 21   (NACE A21 macro-sectors)
 
   Row MultiIndex:    (Year, Variable)      shape: N_yr × N_var
@@ -293,7 +293,7 @@ Each extractor returns a consistent `(factor_data, variables, pathway_df)` tripl
 
   Each country block (21 columns) holds identical values —
   eQALY coefficients do not vary by NACE sector, only by country.
-  The 21-sector structure is retained for MRIO compatibility (ADR-012).
+  The 21-sector structure is retained for multi-sector analysis tools (ADR-012).
 ```
 
 ---

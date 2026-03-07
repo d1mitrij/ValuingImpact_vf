@@ -11,7 +11,7 @@
 
 | ADR | Title | Status |
 |-----|-------|--------|
-| ADR-001 | Mirror the WifOR / EPS five-stage pipeline | Accepted |
+| ADR-001 | Five-stage pipeline (config → load → matrix → deflate → export) | Accepted |
 | ADR-002 | Extend EPS broadcast to country-varying D[v, c] | Accepted |
 | ADR-003 | Use IMF world USD deflator (base 2023) | Accepted |
 | ADR-004 | Freeze deflator at last known year for forecasts | Accepted |
@@ -26,40 +26,33 @@
 
 ---
 
-## ADR-001 — Mirror the WifOR / EPS five-stage pipeline
+## ADR-001 — Five-stage pipeline (config → load → matrix → deflate → export)
 
 **Status:** Accepted
 **Date:** 2026-03-07
 
 ### Context
 
-The [steen-vf1/eps_value_factors](../steen-vf1/eps_value_factors) and
-[uba1](../uba1) projects established a clear pipeline architecture
-(`config.py` → `pipeline.py` → individual indicator scripts → parallel runner)
-already in use in the transitionvaluation ecosystem. Adopting the same structure
-for eQALY data reduces the learning curve and enables drop-in integration.
+A structured, reproducible pipeline is needed for converting XLSX source data
+into coefficient matrices, with clear stage boundaries for testability.
 
 ### Decision
 
-`pipeline.py` implements the same five stages in the same order and with the
-same function signatures as the EPS/WifOR pipeline:
+`pipeline.py` implements five stages:
 
-| Stage | EPS / WifOR | eQALY |
-|-------|-------------|-------|
-| 1 Configuration | `config.get_indicator_config()` | `config.get_indicator_config()` — identical signature |
-| 2 Data Loading | `load_eps_sheet()` | `load_sheet()` — simplified (no multi-sheet dispatch) |
-| 3 Coefficient Matrix | `create_coefficient_dataframe()` + `populate_coefficients()` | identical + new `populate_coefficients_by_country()` |
-| 4 Inflation Adjustment | `calculate_inflation_factors()` + `apply_deflation()` | identical signatures |
-| 5 Output Export | `save_results()` | identical signature and output keys |
+| Stage | Function |
+|-------|----------|
+| 1 Configuration | `config.get_indicator_config()` |
+| 2 Data Loading | `load_sheet()` |
+| 3 Coefficient Matrix | `create_coefficient_dataframe()` + `populate_coefficients_by_country()` |
+| 4 Inflation Adjustment | `calculate_inflation_factors()` + `apply_deflation()` |
+| 5 Output Export | `save_results()` |
 
-Each of the 6 indicator scripts (`01_prepare_hui_eqaly.py` … `06_prepare_natcap_land_eqaly.py`)
-is a thin wrapper calling `pipeline.run_indicator(key)`, mirroring the EPS pattern.
+Each of the 6 indicator scripts is a thin wrapper calling `pipeline.run_indicator(key)`.
 
 ### Consequences
 
-- Drop-in compatibility with the transitionvaluation loading code.
-- The `config.py` `INDICATORS` dict, `COMMON_PARAMS`, and helper functions
-  follow the same key naming conventions as EPS.
+- Each stage is independently testable.
 - Extending the pipeline to new eQALY datasets (e.g., EDU, LCA) requires
   only a new entry in `INDICATORS` and a new `extract_*()` function.
 
@@ -81,7 +74,7 @@ arr[row_start:row_end, :] = d_values[:, np.newaxis]   # identical for every coun
 
 The eQALY value factors (HUI, HUT, wages, DALY rates, land values) **differ by
 country** — this is their key methodological advantage over EPS. A different
-population strategy is required without breaking the WifOR matrix format.
+population strategy is required that preserves the standard coefficient matrix format.
 
 ### Decision
 
@@ -124,7 +117,7 @@ work on the full `(N_var × N_col)` slice, keeping the vectorised performance.
 The eQALY value factors are expressed in **USD at 2023 price levels** — a
 different currency and base year than EPS (EUR 2015) or UBA (EUR 2025).
 An inflation adjustment must be applied to produce year-specific nominal values
-consistent with the transitionvaluation year series (2014–2030, 2050, 2100).
+covering the standard year series 2014–2030 (annual) plus 2050 and 2100.
 
 ### Decision
 
@@ -172,8 +165,7 @@ Forecast years beyond 2023 are assigned `deflator = 100.0` (factor I[y] = 1.0),
 identical to the 2023 base year. Unit strings for forecast years are labelled
 `"2023USD/{unit}"` to signal the frozen 2023 price level.
 
-This matches the EPS convention (freeze at 2023 EU HICP) and the WifOR
-transitionvaluation framework for all indicators.
+Future inflation is not projected beyond the last available IMF release year.
 
 ### Consequences
 
@@ -198,7 +190,7 @@ risk factor. To produce a coefficient matrix in the standard monetary format
 Two options were considered:
 1. Store physical DALY rates (DALY/capita) — consistent with health literature
 2. Monetise at DALY_value × DALY_rate and store USD/capita — consistent with
-   the eQALY model and the WifOR monetary format
+   the eQALY model (monetary coefficient format)
 
 ### Decision
 
@@ -228,7 +220,7 @@ traceability and re-derivation at different DALY value assumptions.
 ### Context
 
 The HUI dataset covers 203 countries; HUT covers 148; LANCA land values cover
-a subset. The 188-country scope (matching EPS/WifOR) includes some countries
+a subset. The 188-country scope includes some countries
 not present in one or more eQALY source sheets.
 
 ### Decision
@@ -338,10 +330,9 @@ to populate all NACE sectors with the same country-level value.
 
 ### Context
 
-The transitionvaluation loader reads coefficient matrices from HDF5 files
-with specific key names (`"coefficient"`, `"unit"`) and expects a `(Year,
-Variable) × (GeoRegion, NACE)` MultiIndex DataFrame. Deviating from this
-format would require changes to all downstream consumers.
+HDF5 output must use consistent key names (`"coefficient"`, `"unit"`) and a
+`(Year, Variable) × (GeoRegion, NACE)` MultiIndex DataFrame structure for
+compatibility with analysis tools that consume this format.
 
 ### Decision
 
@@ -353,8 +344,7 @@ format would require changes to all downstream consumers.
 
 ### Consequences
 
-- eQALY outputs are immediately loadable by any transitionvaluation consumer
-  designed for EPS data.
+- eQALY outputs are immediately loadable by analysis tools that use this HDF5 format.
 - The 50-column Excel cap (ADR-010) applies equally, for the same reasons.
 
 ---
@@ -438,13 +428,13 @@ same HUI multiplier. The NACE dimension is structurally empty.
 
 ### Decision
 
-Retain the 21-sector A21 NACE column structure for full compatibility with
-MRIO/EORA26-style analysis frameworks, consistent with EPS and WifOR.
-All 21 NACE columns hold identical values per `(Year, Variable, GeoRegion)`.
+Retain the 21-sector NACE A21 column structure for compatibility with
+multi-sector analysis tools. All 21 NACE columns hold identical values per
+`(Year, Variable, GeoRegion)` — eQALY factors do not vary by sector.
 
 ### Consequences
 
-- Full drop-in compatibility with transitionvaluation MRIO loading code.
+- Consistent structure across all indicators in the pipeline.
 - Storage overhead is a factor of 21 relative to a country-only matrix,
   but blosc compression reduces this significantly (high within-column
   redundancy).

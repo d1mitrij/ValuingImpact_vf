@@ -1,7 +1,7 @@
 # Validation Report — eQALY Value Factors
 
 **eQALY Impact Valuation Method — Valuing Impact reference datasets
-as transitionvaluation-compatible coefficient matrices**
+as structured coefficient matrices**
 
 **Method:** https://valuingimpact.com/all/the-eqaly-impact-valuation-method/
 **Scripts:** Dr Dimitrij Euler, Greenings — dimitrij.euler@greenings.org

@@ -1,7 +1,7 @@
 # eQALY Value Factors
 
 **eQALY Impact Valuation Method — Valuing Impact reference datasets
-as transitionvaluation-compatible coefficient matrices**
+as structured coefficient matrices**
 
 **Value factors:** [Valuing Impact](https://www.valuingimpact.org) —
 eQALY_Template_2025-02-14_EXPORT.xlsx / WIVF — WASH Impact Valuation Framework 2024
@@ -17,16 +17,14 @@ with support of [Claude Code](https://claude.ai/claude-code) (Anthropic)
 ## Overview
 
 This module extracts the six core reference datasets from the **eQALY Impact Valuation
-Method** (Valuing Impact, 2025) and transfers them into the value-factor pipeline
-architecture established by the
-[transitionvaluation](https://github.com/Greenings/transitionvaluation) project.
+Method** (Valuing Impact, 2025) into a structured value-factor pipeline using a
+`config.py` → `pipeline.py` → indicators/ architecture.
 
 The eQALY method provides a multi-capital framework for quantifying and monetising
 social, human, and natural capital impacts — covering health (DALY), income (wages,
 HUI), public finance (HUT), and environmental externalities (NatCap/LCA). This module
 makes all six reference datasets available as structured coefficient matrices in the
-same `(Year, Variable) × (GeoRegion, NACE)` format used by the EPS and UBA value
-factor pipelines.
+standard `(Year, Variable) × (GeoRegion, NACE)` coefficient matrix format.
 
 The extraction scripts and documentation were written by Dr Dimitrij Euler (Greenings)
 with support of Claude Code (Anthropic). The underlying value factor data is the
@@ -89,7 +87,7 @@ Each indicator produces two files in `output/`:
 | `NN_eqaly_{key}.h5` | Full coefficient matrix (HDF5, keys: `coefficient`, `unit`) |
 | `NN_eqaly_{key}.xlsx` | Excel: `Coefficients` sheet (50 representative columns), `Units`, `Pathway data` |
 
-### HDF5 structure (identical to WifOR/EPS convention)
+### HDF5 structure
 
 ```
 key: "coefficient"
@@ -240,19 +238,6 @@ The extraction scripts, pipeline architecture, and documentation were produced b
 with support of [Claude Code](https://claude.ai/claude-code) (Anthropic)
 
 ---
-
-## Relation to steen-vf1 / uba1 / transitionvaluation
-
-| steen-vf1 (EPS) | uba1 (UBA) | eqaly_value_factors | Note |
-|---|---|---|---|
-| `config.py` → `INDICATORS` | `config.py` → `TABLE_GROUPS` | `config.py` → `INDICATORS` | Same pattern |
-| `pipeline.run_indicator(key)` | `pipeline.run_table(key)` | `pipeline.run_indicator(key)` | Same signature |
-| `indicators/NNN_*_eps.py` | `tables/NN_*.py` | `indicators/NN_*_eqaly.py` | Same thin-wrapper |
-| `run_all_eps_factors.py` | `extract_uba_values.py` | `run_all_eqaly_factors.py` | Same orchestrator |
-| HDF5 + Excel | CSV + Excel | HDF5 + Excel | eQALY uses full matrix like EPS |
-| Global D[s] broadcast | Flat CSV | Country-varying D[s,c] | eQALY adds country dimension |
-| EU HICP deflator | No deflation | IMF USD world deflator | Different currency/base |
-| `execution_log_*.txt` | `execution_log_*.txt` | `execution_log_*.txt` | Same format |
 
 ---
 
