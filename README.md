@@ -199,6 +199,49 @@ print(f"Societal valuation: {societal_valuation:,.0f} USD")   # → 295,981 USD
 
 ---
 
+## Value Transfer Mechanism
+
+The eQALY method applies a **country-specific welfare adjustment** as its core value
+transfer mechanism. Rather than using a single global value factor, it adjusts every
+monetary impact by the welfare conditions prevailing in the affected country:
+
+| Mechanism | Indicators | Transfer direction | Transfer factor |
+|---|---|---|---|
+| **HUI — Health Utility of Income** | `hui`, `wages` | Income impact → societal welfare | `HUI[country]` (USD/USD) |
+| **HUT — Health Utility of Taxes** | `hut`, `natcap_land` | Revenue / ecosystem impact → welfare | `HUT[country]` (USD/USD) |
+| **DALY value (global)** | `health_daly` | Disease burden → USD damage | 59,446 USD/DALY (OECD GDP/capita 2023) |
+| **EF 3.0 / CE Delft (global)** | `natcap_pollution` | LCA midpoint → USD damage | Uniform global factors |
+| **LANCA v2.0** | `natcap_land` | Land cover area → ecosystem service USD | Country-specific USD/ha |
+
+The HUI and HUT multipliers are derived from country-level data on living wages, health
+expenditure, and GDP — effectively scaling the value of an impact by the welfare
+conditions of the country in which it occurs. This is equivalent to a
+**Purchasing Power Parity + welfare transfer** from a global reference (OECD 2023 GDP/capita)
+to country-specific conditions.
+
+For `natcap_pollution`, no country variation is applied — values follow the globally
+uniform CE Delft/EF 3.0 approach, consistent with the EPS broadcast convention.
+
+---
+
+## Relation to transitionvaluation
+
+| transitionvaluation / WifOR convention | This project |
+|---|---|
+| `config.py` → `INDICATORS` dict | ✓ |
+| `C[y,v,c,s] = Sign × VF[v,c] × I[y]` | ✓ (EPS: VF uniform; eQALY: VF[c] country-varying) |
+| `(Year, Variable)` row MultiIndex | ✓ |
+| `(GeoRegion, NACE)` column MultiIndex | ✓ 188 countries × 21 NACE sectors |
+| HDF5 keys `"coefficient"`, `"unit"` | ✓ |
+| `ThreadPoolExecutor` parallel runner | ✓ |
+| Timestamped execution log | ✓ |
+
+The key architectural difference from the EPS pipeline: eQALY coefficients **vary by
+country** for five of six indicators, requiring a `populate_coefficients_by_country()`
+pass instead of the uniform `populate_coefficients()` broadcast.
+
+---
+
 ## Dependencies
 
 ```bash

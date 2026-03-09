@@ -351,7 +351,96 @@ NatCap | VI dataset (Valuing Impact, 2023 USD price level).
 
 ---
 
-## 5. Data Processing Pipeline
+## 5. Value Transfer Mechanism
+
+The eQALY method applies a structured **welfare-adjusted value transfer** to derive
+country-specific monetary impact values from global reference data. This is the
+defining architectural feature that distinguishes eQALY from globally-uniform
+LCIA methods (EPS, EF 3.0).
+
+### 5.1 HUI — welfare transfer for income impacts
+
+The Human Utility of Income (HUI) multiplier adjusts the monetary value of an income
+impact based on the welfare conditions prevailing in the country:
+
+```
+Societal_value = Income_USD × HUI[country]
+
+HUI[country] = DALY_per_work_year[country] / living_wage[country]
+```
+
+This means: an additional USD of income yields greater societal welfare in a country
+with high disease burden and low wages (e.g., Afghanistan: HUI ≈ 2.1) than in a
+wealthy country with low disease burden (e.g., Germany: HUI ≈ 0.027).
+
+**Transfer direction:** Global reference income (USD) → country welfare value (USD/USD)
+**Key external sources:** World Bank (living wage); IHME GBD 2019 (DALY rates)
+
+### 5.2 HUT — welfare transfer for public revenue impacts
+
+The Health Utility of Taxes (HUT) multiplier expresses the Social Return on Investment
+of public spending — how much welfare value is generated per USD of tax revenue
+collected and redistributed through public services:
+
+```
+Societal_value = Revenue_USD × HUT[country]
+
+HUT[country] ≈ health_expenditure_DALY_saved × DALY_value / tax_revenue
+```
+
+**Transfer direction:** Global reference revenue (USD) → country welfare value (USD/USD)
+**Used for:** Social capital pathways; natural capital ecosystem service scaling (global avg)
+**Key external sources:** WHO Current Health Expenditure (2023); World Bank fiscal data
+
+### 5.3 DALY value — temporal and geographic transfer
+
+The DALY value (59,446 USD/DALY) is anchored to the **OECD GDP/capita 2023 in
+current purchasing power parity**. This constitutes a temporal transfer:
+
+```
+DALY_value[y] = DALY_value_2023 × I[y]   (inflation-adjusted per year)
+```
+
+Geographic transfer from this global OECD average to country-specific conditions is
+performed implicitly through the DALY rate data itself (country-specific incidence from
+IHME GBD 2019) rather than through the DALY value parameter.
+
+### 5.4 NatCap pollution — no country transfer
+
+The 16 LCA midpoint valuation factors for natural capital pollution are derived from
+CE Delft Environmental Prices Handbook and WRI water cost data. **No country-specific
+transfer is applied** — these are broadcast globally (identical to EPS/EF 3.0 convention).
+
+### 5.5 NatCap land — country transfer via LANCA v2.0
+
+Land use ecosystem service values are country-specific using LANCA v2.0
+characterisation factors (Bach et al. 2016):
+
+```
+Ecosystem_service_USD = Area_ha × LANCA_VF[country, land_type] × HUT_avg
+```
+
+Countries without LANCA entries fall back to the global average embedded in the
+eQALY template (GLO row). The HUT_avg (0.7581) scales the physical ecosystem
+service value to its societal welfare equivalent.
+
+**Transfer direction:** Physical land area (ha) → societal welfare value (USD)
+**Key external sources:** LANCA v2.0 (Bach et al. 2016, Fraunhofer IBP)
+
+### 5.6 Summary: value transfer by indicator
+
+| Indicator | Transfer type | Transfer factor | Source of VF |
+|---|---|---|---|
+| `hui` | Welfare (income → utility) | HUI[country] | Valuing Impact (2023) |
+| `hut` | Welfare (revenue → utility) | HUT[country] | Valuing Impact (2023) |
+| `wages` | Geographic (income level) | Wage[country, skill] | ILO + World Bank (via Valuing Impact) |
+| `health_daly` | Geographic + temporal | DALY_rate[c,r] × DALY_value × I[y] | IHME GBD 2019; OECD 2023 |
+| `natcap_pollution` | None (global uniform) | EF 3.0 / CE Delft | CE Delft (2023); WRI (2015) |
+| `natcap_land` | Geographic | LANCA_VF[country] × HUT_avg | LANCA v2.0; Valuing Impact |
+
+---
+
+## 6. Data Processing Pipeline
 
 The five-stage pipeline is implemented in `pipeline.py` and called from each indicator script.
 
@@ -415,7 +504,7 @@ the same pattern as EPS, extended to the country dimension.
 
 ---
 
-## 6. Quality Assurance
+## 7. Quality Assurance
 
 ### 6.1 Validation checks performed
 
@@ -458,7 +547,7 @@ the same pattern as EPS, extended to the country dimension.
 
 ---
 
-## 7. References
+## 8. References
 
 ### Primary value factor source
 
