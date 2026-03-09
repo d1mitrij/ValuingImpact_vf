@@ -374,7 +374,16 @@ with high disease burden and low wages (e.g., Afghanistan: HUI ≈ 2.1) than in 
 wealthy country with low disease burden (e.g., Germany: HUI ≈ 0.027).
 
 **Transfer direction:** Global reference income (USD) → country welfare value (USD/USD)
-**Key external sources:** World Bank (living wage); IHME GBD 2019 (DALY rates)
+
+**External sources for HUI value transfer:**
+
+| Source | Role | License | Commercial use |
+|---|---|---|---|
+| **IHME GBD 2019** | DALY rate per work year per country (numerator) | IHME Free-of-Charge Non-Commercial User Agreement | ✗ Non-commercial only |
+| **World Bank WDI** | Living wage benchmark; GNI per capita (denominator) | CC BY 4.0 | ✓ Yes |
+| **Valuing Impact HUI 2023 \| VI** | Final HUI dataset per country | Proprietary | ✗ Check terms |
+
+---
 
 ### 5.2 HUT — welfare transfer for public revenue impacts
 
@@ -390,7 +399,16 @@ HUT[country] ≈ health_expenditure_DALY_saved × DALY_value / tax_revenue
 
 **Transfer direction:** Global reference revenue (USD) → country welfare value (USD/USD)
 **Used for:** Social capital pathways; natural capital ecosystem service scaling (global avg)
-**Key external sources:** WHO Current Health Expenditure (2023); World Bank fiscal data
+
+**External sources for HUT value transfer:**
+
+| Source | Role | License | Commercial use |
+|---|---|---|---|
+| **WHO Global Health Expenditure Database (GHED)** | Current health expenditure per capita (% of GDP) by country | WHO open access database — WHO terms apply (non-commercial citation free) | ✗ Non-commercial with attribution |
+| **World Bank WDI** | GDP per capita; fiscal revenue data by country | CC BY 4.0 | ✓ Yes |
+| **Valuing Impact HUT 2023 \| VI** | Final HUT dataset per country | Proprietary | ✗ Check terms |
+
+---
 
 ### 5.3 DALY value — temporal and geographic transfer
 
@@ -405,11 +423,31 @@ Geographic transfer from this global OECD average to country-specific conditions
 performed implicitly through the DALY rate data itself (country-specific incidence from
 IHME GBD 2019) rather than through the DALY value parameter.
 
+**External sources for DALY value transfer:**
+
+| Source | Role | License | Commercial use |
+|---|---|---|---|
+| **OECD GDP/capita 2023 (current PPP)** | Anchor value: 59,446 USD/DALY = OECD average GDP per capita 2023 | OECD Proprietary — data values permissive with attribution | Data values: permissive; publications restricted |
+| **IHME GBD 2019** | Country-specific DALY rates per risk factor (incidence denominator) | IHME Free-of-Charge Non-Commercial User Agreement | ✗ Non-commercial only |
+| **IMF World Economic Outlook** | USD world deflator I[y]: converts 2023 base to year-y nominal | IMF permissive with attribution (data may be resold with attribution) | ✓ Yes (with attribution) |
+
+---
+
 ### 5.4 NatCap pollution — no country transfer
 
 The 16 LCA midpoint valuation factors for natural capital pollution are derived from
 CE Delft Environmental Prices Handbook and WRI water cost data. **No country-specific
 transfer is applied** — these are broadcast globally (identical to EPS/EF 3.0 convention).
+
+**External sources for NatCap pollution values (no VT; direct values):**
+
+| Source | Role | License | Commercial use |
+|---|---|---|---|
+| **CE Delft Environmental Prices Handbook** | 14 of 16 LCA midpoint valuation factors | Proprietary — CE Delft All Rights Reserved | ✗ Requires CE Delft permission |
+| **WRI Aqueduct** | Water use valuation factor (user deprivation potential) | CC BY 4.0 | ✓ Yes |
+| **ReCiPe 2016 / EF 3.0** | LCA characterisation factors (linked via `LCA \| DB`) | CC BY 4.0 | ✓ Yes |
+
+---
 
 ### 5.5 NatCap land — country transfer via LANCA v2.0
 
@@ -425,18 +463,26 @@ eQALY template (GLO row). The HUT_avg (0.7581) scales the physical ecosystem
 service value to its societal welfare equivalent.
 
 **Transfer direction:** Physical land area (ha) → societal welfare value (USD)
-**Key external sources:** LANCA v2.0 (Bach et al. 2016, Fraunhofer IBP)
+
+**External sources for NatCap land value transfer:**
+
+| Source | Role | License | Commercial use |
+|---|---|---|---|
+| **LANCA v2.0** (Bach et al. 2016, Fraunhofer IBP) | Country-specific land characterisation factors (erosion, filtration, groundwater, bioproduction) | Fraunhofer IBP copyright — free for research download; no formal CC license | Research: ✓; Commercial: contact Fraunhofer IBP |
+| **Valuing Impact NatCap \| VI** | Final LANCA-based USD/ha values per country (2023 USD) | Proprietary | ✗ Check terms |
+
+---
 
 ### 5.6 Summary: value transfer by indicator
 
-| Indicator | Transfer type | Transfer factor | Source of VF |
-|---|---|---|---|
-| `hui` | Welfare (income → utility) | HUI[country] | Valuing Impact (2023) |
-| `hut` | Welfare (revenue → utility) | HUT[country] | Valuing Impact (2023) |
-| `wages` | Geographic (income level) | Wage[country, skill] | ILO + World Bank (via Valuing Impact) |
-| `health_daly` | Geographic + temporal | DALY_rate[c,r] × DALY_value × I[y] | IHME GBD 2019; OECD 2023 |
-| `natcap_pollution` | None (global uniform) | EF 3.0 / CE Delft | CE Delft (2023); WRI (2015) |
-| `natcap_land` | Geographic | LANCA_VF[country] × HUT_avg | LANCA v2.0; Valuing Impact |
+| Indicator | Transfer type | Transfer factor | Key external sources | Licenses |
+|---|---|---|---|---|
+| `hui` | Welfare (income → utility) | HUI[country] | IHME GBD 2019; World Bank WDI | Non-commercial; CC BY 4.0 |
+| `hut` | Welfare (revenue → utility) | HUT[country] | WHO GHED; World Bank WDI | WHO terms; CC BY 4.0 |
+| `wages` | Geographic (income level) | Wage[country, skill] | ILO ILOSTAT; World Bank WDI | CC BY 4.0; CC BY 4.0 |
+| `health_daly` | Geographic + temporal | DALY_rate[c,r] × DALY_value × I[y] | IHME GBD 2019; OECD 2023; IMF WEO | Non-commercial; proprietary; permissive |
+| `natcap_pollution` | None (global uniform) | EF 3.0 / CE Delft | CE Delft; WRI Aqueduct | Proprietary; CC BY 4.0 |
+| `natcap_land` | Geographic | LANCA_VF[country] × HUT_avg | LANCA v2.0 (Fraunhofer IBP) | Fraunhofer (research free) |
 
 ---
 
